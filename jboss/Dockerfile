@@ -21,9 +21,6 @@ COPY jboss-overlay.cli  /opt
 COPY jboss-ejb3.xml     /opt
 COPY jboss-web.xml      /opt
 
-## Configure WMQ
-#COPY mqadv_dev90_linux_x86-64.tar.gz     /tmp
-
 ## Change user to install some
 USER root
 RUN cd /tmp && yum install -y wget && wget ${MQM_URL} && tar -zxvf ./*.tar.gz  1> /dev/null && cd MQServer && ./mqlicense.sh -text_only -accept  && rpm -ivh  MQSeriesJava*.rpm MQSeriesRuntime*.rpm
