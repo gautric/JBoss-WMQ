@@ -1,0 +1,51 @@
+embed-server --server-config=standalone-full.xml
+
+deployment-overlay add --name=jboss-ejb-overlay --content=/WMQ_IVT_MDB.jar/META-INF/jboss-ejb3.xml=/opt/jboss-ejb3.xml --deployments=wmq.jmsra.ivt.ear --redeploy-affected
+deployment-overlay add --name=jboss-web-overlay --content=/WMQ_IVT.war/WEB-INF/jboss-web.xml=/opt/jboss-web.xml --deployments=wmq.jmsra.ivt.ear --redeploy-affected
+
+# Remove unused stuff
+/subsystem=datasources:remove
+/subsystem=webservices:remove
+/subsystem=jpa:remove
+/subsystem=infinispan:remove
+
+/subsystem=ejb3:write-attribute(name=default-resource-adapter-name, value=${ejb.resource-adapter-name:wmq.jmsra.rar})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar:add(archive=wmq.jmsra.rar,transaction-support=LocalTransaction,statistics-enabled=true)
+
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF:add(class-name=com.ibm.mq.connector.outbound.ManagedConnectionFactoryImpl,jndi-name=JMS2CF, use-java-context=false)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=hostName:add(value=${websphere.hostName:localhost})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=password:add(value=${websphere.password:mqm})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=queueManager:add(value=${websphere.queueManager:QUEUE.MANAGER})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=port:add(value=${websphere.port:1414})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=channel:add(value=${websphere.channel:SYSTEM.AUTO.SVRCONN})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=transportType:add(value=${websphere.transportType:CLIENT})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=JMS2CF/config-properties=username:add(value=${websphere.username:mqm})
+
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF:add(class-name=com.ibm.mq.connector.outbound.ManagedConnectionFactoryImpl,jndi-name=jms/ivt/IVTCF, use-java-context=false)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=hostName:add(value=${websphere.hostName:localhost})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=password:add(value=${websphere.password:mqm})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=queueManager:add(value=${websphere.queueManager:QUEUE.MANAGER})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=port:add(value=${websphere.port:1414})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=channel:add(value=${websphere.channel:SYSTEM.AUTO.SVRCONN})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=transportType:add(value=${websphere.transportType:CLIENT})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=IVTCF/config-properties=username:add(value=${websphere.username:mqm})
+
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=QueuePool:add(class-name=com.ibm.mq.connector.outbound.MQQueueProxy,jndi-name=jms/ivt/IVTQueue,use-java-context=true,enabled=true)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=QueuePool/config-properties=baseQueueName:add(value=${websphere.queueName:Q_QUEUE})
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=QueuePool/config-properties=baseQueueManagerName:add(value=${websphere.queueManager:QUEUE.MANAGER})
+
+# Websphere MQ Host and Port
+#/system-property=websphere.hostName:add(value=wmq-ivt)
+#/system-property=websphere.port:add(value=1414)
+
+# Websphere MQ configuration
+/system-property=websphere.transportType:add(value=CLIENT)
+/system-property=websphere.username:add(value=alice)
+/system-property=websphere.password:add(value=passw0rd)
+/system-property=websphere.channel:add(value=PASSWORD.SVRCONN)
+/system-property=websphere.queueManager:add(value=QM1)
+/system-property=websphere.queueName:add(value=Q_QUEUE)
+/system-property=websphere.resource.adapter:add(value=wmq.jmsra.rar)
+/system-property=ejb.resource-adapter-name:add(value=wmq.jmsra.rar)
+
+reload --admin-only=false

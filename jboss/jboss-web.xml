@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+  <context-root>WMQ_IVT</context-root>
+  <resource-ref>
+    <res-ref-name>IVTCF</res-ref-name>
+    <res-type>javax.jms.ConnectionFactory</res-type>
+    <jndi-name>java:/jms/ivt/IVTCF</jndi-name>
+  </resource-ref>
+  <resource-env-ref>
+    <resource-env-ref-name>IVTQueue</resource-env-ref-name>
+    <jndi-name>java:/jms/ivt/IVTQueue</jndi-name>
+  </resource-env-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejb/WMQ_TransactedIVT</ejb-ref-name>
+    <jndi-name>WMQ_TransactedIVT</jndi-name>
+  </ejb-ref>
+</jboss-web>

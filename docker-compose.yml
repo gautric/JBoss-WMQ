@@ -1,0 +1,22 @@
+version: '2'
+services:
+  jboss-ivt:
+    image: jboss-ivt
+    build: jboss
+    ports:
+     - "8080:8080"
+     - "9990:9990"
+    environment:
+      JAVA_OPTS: "-Dwebsphere.hostName=wmq-ivt -Dwebsphere.port=1414"
+    links:
+      - wmq-ivt
+    depends_on:
+      - wmq-ivt
+  wmq-ivt:
+    image: wmq-ivt
+    build: wmq
+    environment:
+      LICENSE: "accept"
+      MQ_QMGR_NAME: "QM1"
+    ports:
+     - "1414:1414"
