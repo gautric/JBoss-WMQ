@@ -16,11 +16,6 @@ ENV MQM_URL     http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/me
 COPY jboss-eap-7.0.0.zip /opt
 RUN unzip /opt/jboss-eap-7.0.0.zip  1> /dev/null && echo "Install JBoss instance"
 
-### JBoss configuration files
-COPY jboss-overlay.cli  /opt
-COPY jboss-ejb3.xml     /opt
-COPY jboss-web.xml      /opt
-
 ## Change user to install some
 USER root
 RUN cd /tmp && yum install -y wget && wget ${MQM_URL} && tar -zxvf ./*.tar.gz  1> /dev/null && cd MQServer && ./mqlicense.sh -text_only -accept  && rpm -ivh  MQSeriesJava*.rpm MQSeriesRuntime*.rpm
@@ -33,6 +28,11 @@ RUN $JBOSS_HOME/bin/add-user.sh admin admin123! --silent
 ## Copy EAR and RAR
 RUN cp ${MQM_HOME}/java/lib/jca/wmq.jmsra.ivt.ear ${JBOSS_HOME}/standalone/deployments
 RUN cp ${MQM_HOME}/java/lib/jca/wmq.jmsra.rar     ${JBOSS_HOME}/standalone/deployments
+
+### JBoss configuration files
+COPY jboss-overlay.cli  /opt
+COPY jboss-ejb3.xml     /opt
+COPY jboss-web.xml      /opt
 
 ### Configure EAP
 RUN echo "JAVA_OPTS=\"\$JAVA_OPTS -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0\"" >> $JBOSS_HOME/bin/standalone.conf
