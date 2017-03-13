@@ -12,7 +12,7 @@ ENV JBOSS_HOME  /opt/jboss/jboss-eap-7.0
 ENV MQM_HOME    /opt/mqm
 ENV MQM_URL     http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqadv/mqadv_dev90_linux_x86-64.tar.gz
 
-### Install EAP 6.3.0
+### Install EAP 7.0.0
 COPY jboss-eap-7.0.0.zip /opt
 RUN unzip /opt/jboss-eap-7.0.0.zip  1> /dev/null && echo "Install JBoss instance"
 
